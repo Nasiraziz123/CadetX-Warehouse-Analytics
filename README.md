@@ -23,7 +23,7 @@ The objective is to understand the available data, assess data quality, identify
 CadetX-Warehouse-Analytics/
 ├── Data/                       # Raw data; excluded from Git
 ├── Docs/
-│   ├── data_quality_log.md
+│   ├── Data_Quality_Log.md
 │   ├── initial_data_dictionary.md
 │   └── week_1_sprint_notes.md
 ├── Src/
