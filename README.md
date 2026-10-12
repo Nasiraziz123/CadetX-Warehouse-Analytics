@@ -52,7 +52,7 @@ These are preliminary findings, not confirmed explanations of the underlying iss
 
 ## Documentation
 
-- [Data Quality Log](Docs/data_quality_log.md)
+- [Data Quality Log](Docs/Data_Quality_Log.md)
 - [Initial Data Dictionary](Docs/initial_data_dictionary.md)
 - [Week 1 Sprint Notes](Docs/week_1_sprint_notes.md)
 
