@@ -54,7 +54,7 @@ The project follows a 12-week sprint structure. This section will be updated as 
 - Reviewed dataset dimensions, columns, data types, missing values, and duplicate records.
 - Began documenting the datasets and initial project findings.
 
-**Documentation:** [Week 1 README](week-01/README.md)
+**Documentation:** [Week 1 README](week_1/README.md)
 
 ### Week 2 — Data Quality Assessment
 
@@ -76,7 +76,7 @@ Working copies were validated against the original row counts and missing-value 
 
 **Documentation:**
 - [Week 2 README](week-02/README.md)
-- [Week 2 Data Quality Assessment Report](week-02/docs/week_2_data_quality_report.md)
+- [Week 2 Data Quality Assessment Report](week_2/docs/week_2_data_quality_report.md)
 
 ### Weeks 3–12 — Upcoming Sprints
 
