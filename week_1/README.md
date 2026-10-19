@@ -52,9 +52,9 @@ These are preliminary findings, not confirmed explanations of the underlying iss
 
 ## Documentation
 
-- [Data Quality Log](DOCS/Data_Quality_Log.md)
-- [Initial Data Dictionary](DOCS/initial_data_dictionary.md)
-- [Week 1 Sprint Notes](DOCS/week_1_sprint_notes.md)
+- [Data Quality Log](week_1/DOCS/Data_Quality_Log.md)
+- [Initial Data Dictionary](week_1/DOCS/initial_data_dictionary.md)
+- [Week 1 Sprint Notes](week_1/DOCS/week_1_sprint_notes.md)
 
 ## Running the Profiling Script
 
