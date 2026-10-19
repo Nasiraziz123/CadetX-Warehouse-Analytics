@@ -75,7 +75,7 @@ No unsupported corrections were applied. Ambiguous values and repeated identifie
 Working copies were validated against the original row counts and missing-value counts. Corrected CSV exports and a reusable cleaning script were not produced during this stage.
 
 **Documentation:**
-- [Week 2 README](week_02/README.md)
+- [Week 2 README](week_2/README.md)
 - [Week 2 Data Quality Assessment Report](week_2/DOCS/week_2_data_quality_report.md)
 
 ### Weeks 3–12 — Upcoming Sprints
