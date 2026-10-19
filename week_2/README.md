@@ -33,7 +33,7 @@ The assessment covered 12 primary datasets:
 - No corrected CSV files or reusable cleaning script were exported during this stage.
 
 ## Deliverable
-The detailed findings, validation checks, and data-handling decisions are documented in [`docs/week_2_data_quality_report.md`](DOCS/week_2_data_quality_report.md).
+The detailed findings, validation checks, and data-handling decisions are documented in [`week_2_data_quality_report.md`](DOCS/week_2_data_quality_report.md).
 
 ## Conclusion
 Week 2 established a documented baseline of data-quality issues that must be considered during subsequent analysis. Unresolved issues were preserved and flagged rather than silently altered. These findings will guide later validation, analytical assumptions, and business reporting.

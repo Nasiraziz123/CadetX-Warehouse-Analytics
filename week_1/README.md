@@ -20,14 +20,20 @@ The objective is to understand the available data, assess data quality, identify
 ## Repository Structure
 
 ```text
-CadetX-Warehouse-Analytics/
-├── Data/                       # Raw data; excluded from Git
-├── Docs/
-│   ├── Data_Quality_Log.md
-│   ├── initial_data_dictionary.md
-│   └── week_1_sprint_notes.md
+CadetX_Warehouse_Analytics/
+├── Data/                  # Raw data; excluded from Git
 ├── Src/
 │   └── data_profiling.py
+├── week_1/
+│   ├── README.md
+│   └── DOCS/
+│       ├── Data_Quality_Log.md
+│       ├── initial_data_dictionary.md
+│       └── week_1_sprint_notes.md
+├── week_2/
+│   ├── README.md
+│   └── DOCS/
+│       └── week_2_data_quality_report.md
 ├── .gitignore
 └── README.md
 ```
@@ -52,9 +58,9 @@ These are preliminary findings, not confirmed explanations of the underlying iss
 
 ## Documentation
 
-- [Data Quality Log](week_1/DOCS/Data_Quality_Log.md)
-- [Initial Data Dictionary](week_1/DOCS/initial_data_dictionary.md)
-- [Week 1 Sprint Notes](week_1/DOCS/week_1_sprint_notes.md)
+- [Data Quality Log](DOCS/Data_Quality_Log.md)
+- [Initial Data Dictionary](DOCS/initial_data_dictionary.md)
+- [Week 1 Sprint Notes](DOCS/week_1_sprint_notes.md)
 
 ## Running the Profiling Script
 
