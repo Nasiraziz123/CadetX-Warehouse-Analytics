@@ -1187,3 +1187,1103 @@ print(
         & ~payment_date_check["repeated_invoice_id"]
     ).sum()
 )
+
+
+
+
+
+
+print("------2nd week----------")
+
+print("starting with invoices")
+
+print("shape : ",invoices.shape)
+print("cols : ",invoices.columns.tolist())
+
+duplicated_invoices=invoices[invoices["invoice_id"].duplicated(keep=False)].sort_values("invoice_id")
+
+
+print("length of repeated invoice id :",len(duplicated_invoices))
+print("length of distinct invoice id :",duplicated_invoices["invoice_id"].nunique())
+
+print(duplicated_invoices.to_string(index=False))
+
+invoice_id_count=invoices["invoice_id"].value_counts()
+print("invoice_id frequency\n",invoice_id_count.value_counts().sort_index())
+
+print("maximum occurence of one invoice id : ",invoice_id_count.max())
+
+print("invoice id appearing more than two times \n",invoice_id_count[invoice_id_count>2])
+
+print(invoices[["invoice_id","so_id"]].nunique())
+
+
+sales_order_and_invoice=sales_orders_header.merge(invoices ,on="so_id",how="left")
+print("shape of sales order invoice : ",sales_order_and_invoice.shape)
+print("sales order having no invoiceid are :",sales_order_and_invoice[sales_order_and_invoice["invoice_id"].isna()].shape[0])
+
+sales_order_without_invoices=sales_order_and_invoice[sales_order_and_invoice["invoice_id"].isna()]
+
+print(sales_order_without_invoices["order_status"].value_counts())
+
+print("does every so_id of invoice exist in sales order header are : ",(~invoices["so_id"].isin(sales_orders_header["so_id"])).sum())
+
+
+missing_invoice_payment=payments.merge(invoices ,on="invoice_id",how="left") 
+print("shape of missing invoice payment are : ",missing_invoice_payment.shape)
+
+payment_without_invoices=missing_invoice_payment[missing_invoice_payment["so_id"].isna()]
+print("total mpayment without sales order invovces are : ",payment_without_invoices.shape[0])
+
+invoice_id_count_in_missing_invoice_payment=missing_invoice_payment["invoice_id"].value_counts()
+
+print("invice id frequency in missing_invoice_payment : ",invoice_id_count_in_missing_invoice_payment.value_counts().sort_index())
+
+invoice_id_count_in_payment=payments["invoice_id"].value_counts()
+
+print("occurence of invoice id in payment table\n",invoice_id_count_in_payment.value_counts().sort_index())
+
+invoice_id_counts=invoices["invoice_id"].value_counts()
+repeated_invoice_ids=invoice_id_counts[invoice_id_counts>1].index
+print("repeated invoice id :",len(repeated_invoice_ids))
+
+
+affected_payments=payments[payments["invoice_id"].isin(repeated_invoice_ids)]
+
+print("payment record affected : ",affected_payments.shape[0])
+
+print("distinct affected invoive id : ",affected_payments["invoice_id"].nunique())
+
+print("\nInvoice record counts for affected IDs:")
+print(invoice_id_counts.loc[affected_payments["invoice_id"].unique()].sort_values(ascending=False))
+
+
+
+invoice_example = invoices[
+    invoices["invoice_id"] == "INV-341709"
+]
+
+print(
+    invoice_example[
+        [
+            "invoice_id",
+            "so_id",
+            "customer_id",
+            "invoice_date",
+            "grand_total",
+            "payment_status"
+        ]
+    ].to_string(index=False)
+)
+
+
+print("Payments shape:", payments.shape)
+
+print("Unique payment IDs:", payments["payment_id"].nunique())
+
+payment_id_counts = payments["payment_id"].value_counts()
+
+print("\nPayment ID frequency:")
+print(payment_id_counts.value_counts().sort_index())
+
+print("\nMaximum occurrences of one payment ID:")
+print(payment_id_counts.max())
+
+print("\nPayment IDs appearing more than once:")
+print(payment_id_counts[payment_id_counts > 1])
+
+
+
+payment_example = payments[
+    payments["payment_id"] == "PAY-361416"
+]
+
+print(payment_example.to_string(index=False))
+
+
+# Count exact duplicate payment rows
+exact_duplicate_payments = payments.duplicated(keep=False)
+
+print("Total records involved in exact duplicates:", exact_duplicate_payments.sum())
+
+print(
+    "Number of duplicate rows beyond the first occurrence:",
+    payments.duplicated().sum()
+)
+
+# Display the duplicate records for inspection
+print("\nExact duplicate payment records:")
+print(
+    payments[exact_duplicate_payments]
+    .sort_values("payment_id")
+    .to_string(index=False)
+)
+
+
+
+# Identify payment IDs that appear more than once
+payment_id_counts = payments["payment_id"].value_counts()
+repeated_payment_ids = payment_id_counts[payment_id_counts > 1].index
+
+# Keep records with repeated payment IDs
+repeated_payment_records = payments[
+    payments["payment_id"].isin(repeated_payment_ids)
+]
+
+# Count distinct invoice IDs for each repeated payment ID
+invoices_per_payment_id = (
+    repeated_payment_records.groupby("payment_id")["invoice_id"]
+    .nunique()
+)
+
+print(
+    "Repeated payment IDs linked to multiple invoices:",
+    (invoices_per_payment_id > 1).sum()
+)
+
+print("\nInvoice count per repeated payment ID:")
+print(invoices_per_payment_id.value_counts().sort_index())
+
+print("\nPayment IDs linked to multiple invoices:")
+print(invoices_per_payment_id[invoices_per_payment_id > 1])
+
+
+
+print("inventry")
+
+
+# 1. Check column names and data types
+print("Columns and data types:")
+print(inventry_master.dtypes)
+# 2. Inspect relevant columns
+print("\nSample inventory records:")
+print(
+    inventry_master[
+        ["product_id", "branch_id", "current_stock", "max_stock"]
+    ].head(10)
+)
+
+# 3. Summary statistics
+print("\nStock summary:")
+print(inventry_master[["current_stock", "max_stock"]].describe())
+
+# 4. Count records where current stock exceeds maximum stock
+print("\nStock limit check:")
+print("Total records:", len(inventry_master))
+print("Current stock > maximum stock:",
+      (inventry_master["current_stock"] > inventry_master["max_stock"]).sum())
+print("Current stock <= maximum stock:",
+      (inventry_master["current_stock"] <= inventry_master["max_stock"]).sum())
+
+
+# Inspect all stock-related columns
+stock_columns = [
+    "opening_stock",
+    "reorder_level",
+    "safety_stock",
+    "max_stock",
+    "current_stock"
+]
+
+print("Stock-related summary statistics:")
+print(inventry_master[stock_columns].describe())
+
+print("\nFirst 10 records with all stock fields:")
+print(
+    inventry_master[
+        ["product_id", "branch_id"] + stock_columns
+    ].head(10)
+)
+
+# Check basic stock-rule relationships
+print("\nStock relationship checks:")
+
+print(
+    "Opening stock > max stock:",
+    (inventry_master["opening_stock"] > inventry_master["max_stock"]).sum()
+)
+
+print(
+    "Reorder level > max stock:",
+    (inventry_master["reorder_level"] > inventry_master["max_stock"]).sum()
+)
+
+print(
+    "Safety stock > max stock:",
+    (inventry_master["safety_stock"] > inventry_master["max_stock"]).sum()
+)
+
+print(
+    "Opening stock > current stock:",
+    (inventry_master["opening_stock"] > inventry_master["current_stock"]).sum()
+)
+
+
+# Average current stock by product
+print("Average current stock by product:")
+print(
+    inventry_master.groupby("product_id")["current_stock"]
+    .agg(["count", "mean", "min", "max"])
+    .round(2)
+)
+
+# Average current stock by branch
+print("\nAverage current stock by branch:")
+print(
+    inventry_master.groupby("branch_id")["current_stock"]
+    .agg(["count", "mean", "min", "max"])
+    .round(2)
+)
+
+# Compare current stock with maximum stock
+inventry_master["stock_to_max_ratio"] = (
+    inventry_master["current_stock"] / inventry_master["max_stock"]
+)
+
+print("\nCurrent stock / maximum stock ratio:")
+print(inventry_master["stock_to_max_ratio"].describe().round(2))
+
+
+print("Stock ledger columns and data types:")
+print(stock_ledger.dtypes)
+
+print("\nFirst 10 stock ledger records:")
+print(stock_ledger.head(10))
+
+print("\nMovement type counts:")
+print(stock_ledger["movement_type"].value_counts())
+
+print("\nQuantity summary by movement type:")
+print(
+    stock_ledger.groupby("movement_type")["quantity"]
+    .agg(["count", "sum", "mean", "min", "max"])
+    .round(2)
+)
+
+
+
+# Inspect examples from each movement type
+for movement in ["IN", "OUT", "ADJUSTMENT"]:
+    print(f"\n--- {movement} examples ---")
+
+    print(
+        stock_ledger.loc[
+            stock_ledger["movement_type"] == movement,
+            [
+                "movement_id",
+                "product_id",
+                "branch_id",
+                "movement_date",
+                "quantity",
+                "previous_balance",
+                "running_balance",
+                "expected_balance",
+                "balance_mismatch"
+            ]
+        ].head(5).to_string(index=False)
+    )
+
+# Inspect rows with existing mismatch flags
+print("\n--- Existing mismatch examples ---")
+
+print(
+    stock_ledger.loc[
+        stock_ledger["balance_mismatch"],
+        [
+            "movement_id",
+            "movement_type",
+            "quantity",
+            "previous_balance",
+            "running_balance",
+            "expected_balance",
+            "balance_mismatch"
+        ]
+    ].head(10).to_string(index=False)
+)
+
+print("\nExisting mismatch flag counts:")
+print(stock_ledger["balance_mismatch"].value_counts(dropna=False))
+
+
+
+print("\n\n")
+
+
+# Filter to IN and OUT movements with a known expected balance
+movement_check = stock_ledger.loc[
+    stock_ledger["movement_type"].isin(["IN", "OUT"])
+    & stock_ledger["expected_balance"].notna()
+].copy()
+
+# Calculate whether the recorded running balance differs from expectation
+movement_check["calculated_mismatch"] = (
+    movement_check["running_balance"]
+    != movement_check["expected_balance"]
+)
+
+# Compare our calculation with the existing flag
+print("IN/OUT rows checked:", len(movement_check))
+
+print("\nExisting mismatch flags:")
+print(movement_check["balance_mismatch"].value_counts())
+
+print("\nCalculated mismatch flags:")
+print(movement_check["calculated_mismatch"].value_counts())
+
+print("\nDisagreement between existing and calculated flags:")
+print(
+    (
+        movement_check["balance_mismatch"]
+        != movement_check["calculated_mismatch"]
+    ).sum()
+)
+
+# Display disagreements, if any
+print("\nExamples of disagreement:")
+print(
+    movement_check.loc[
+        movement_check["balance_mismatch"]
+        != movement_check["calculated_mismatch"],
+        [
+            "movement_id",
+            "movement_type",
+            "quantity",
+            "previous_balance",
+            "running_balance",
+            "expected_balance",
+            "balance_mismatch",
+            "calculated_mismatch"
+        ]
+    ].head(10).to_string(index=False)
+)
+
+
+
+
+print("\n\n")
+
+# Check IN/OUT movements where previous_balance is available
+movement_check = stock_ledger.loc[
+    stock_ledger["movement_type"].isin(["IN", "OUT"])
+    & stock_ledger["previous_balance"].notna()
+].copy()
+
+# Independently calculate expected balances
+movement_check["recalculated_expected"] = (
+    movement_check["previous_balance"]
+    + movement_check["quantity"].where(
+        movement_check["movement_type"] == "IN",
+        -movement_check["quantity"]
+    )
+)
+
+# Compare with stored expected balances
+movement_check["expected_formula_match"] = (
+    movement_check["recalculated_expected"]
+    == movement_check["expected_balance"]
+)
+
+print("Rows checked:", len(movement_check))
+print(
+    "Stored expected balance matches formula:",
+    movement_check["expected_formula_match"].sum()
+)
+print(
+    "Stored expected balance differs from formula:",
+    (~movement_check["expected_formula_match"]).sum()
+)
+
+print("\nExamples of formula disagreements:")
+print(
+    movement_check.loc[
+        ~movement_check["expected_formula_match"],
+        [
+            "movement_id",
+            "movement_type",
+            "quantity",
+            "previous_balance",
+            "expected_balance",
+            "recalculated_expected"
+        ]
+    ].head(10).to_string(index=False)
+)
+
+
+
+
+print("\n\n")
+
+# Check chronological ordering within each product and branch
+ledger_order_check = stock_ledger.sort_values(
+    ["product_id", "branch_id", "movement_date", "movement_id"]
+)
+
+print(
+    "Ledger already in product/branch/date/movement order:",
+    stock_ledger[
+        ["product_id", "branch_id", "movement_date", "movement_id"]
+    ].reset_index(drop=True).equals(
+        ledger_order_check[
+            ["product_id", "branch_id", "movement_date", "movement_id"]
+        ].reset_index(drop=True)
+    )
+)
+
+# Check for multiple movements on the same date per product and branch
+same_day_counts = (
+    stock_ledger.groupby(
+        ["product_id", "branch_id", "movement_date"]
+    ).size()
+)
+
+print(
+    "\nProduct-branch-date groups with multiple movements:",
+    (same_day_counts > 1).sum()
+)
+
+print(
+    "Maximum movements for one product, branch, and date:",
+    same_day_counts.max()
+)
+
+print("\nExamples of multiple movements on the same date:")
+print(
+    stock_ledger.loc[
+        stock_ledger.duplicated(
+            ["product_id", "branch_id", "movement_date"],
+            keep=False
+        )
+    ].sort_values(
+        ["product_id", "branch_id", "movement_date", "movement_id"]
+    )[
+        [
+            "product_id",
+            "branch_id",
+            "movement_date",
+            "movement_id",
+            "movement_type",
+            "quantity",
+            "previous_balance",
+            "running_balance",
+            "expected_balance"
+        ]
+    ].head(15).to_string(index=False)
+)
+
+
+
+
+
+print("\n\n")
+
+# Sort movements consistently
+ledger_sequence = stock_ledger.sort_values(
+    ["product_id", "branch_id", "movement_date", "movement_id"]
+).copy()
+
+# Previous movement's running balance within each product-branch sequence
+ledger_sequence["prior_running_balance"] = (
+    ledger_sequence.groupby(["product_id", "branch_id"])["running_balance"]
+    .shift(1)
+)
+
+# Check whether the current previous balance matches the prior running balance
+ledger_sequence["previous_balance_link_matches"] = (
+    ledger_sequence["previous_balance"]
+    == ledger_sequence["prior_running_balance"]
+)
+
+# Exclude first movement in each sequence
+linked_rows = ledger_sequence.loc[
+    ledger_sequence["prior_running_balance"].notna()
+].copy()
+
+print("Movement links checked:", len(linked_rows))
+
+print(
+    "Previous balances matching prior running balances:",
+    linked_rows["previous_balance_link_matches"].sum()
+)
+
+print(
+    "Previous balances not matching prior running balances:",
+    (~linked_rows["previous_balance_link_matches"]).sum()
+)
+
+print("\nExamples where the balances do not link:")
+print(
+    linked_rows.loc[
+        ~linked_rows["previous_balance_link_matches"],
+        [
+            "product_id",
+            "branch_id",
+            "movement_date",
+            "movement_id",
+            "previous_balance",
+            "prior_running_balance",
+            "running_balance",
+            "expected_balance"
+        ]
+    ].head(10).to_string(index=False)
+)
+
+
+
+
+
+print("\n\n")
+
+# Inspect adjustments with known previous balances
+adjustment_check = stock_ledger.loc[
+    (stock_ledger["movement_type"] == "ADJUSTMENT")
+    & stock_ledger["previous_balance"].notna()
+].copy()
+
+# Calculate the actual change in balance
+adjustment_check["actual_balance_change"] = (
+    adjustment_check["running_balance"]
+    - adjustment_check["previous_balance"]
+)
+
+# Compare actual change with the adjustment quantity
+adjustment_check["change_equals_quantity"] = (
+    adjustment_check["actual_balance_change"]
+    == adjustment_check["quantity"]
+)
+
+adjustment_check["change_equals_negative_quantity"] = (
+    adjustment_check["actual_balance_change"]
+    == -adjustment_check["quantity"]
+)
+
+print("Adjustment rows checked:", len(adjustment_check))
+
+print("\nActual balance change distribution:")
+print(adjustment_check["actual_balance_change"].describe())
+
+print(
+    "\nBalance change equals positive quantity:",
+    adjustment_check["change_equals_quantity"].sum()
+)
+
+print(
+    "Balance change equals negative quantity:",
+    adjustment_check["change_equals_negative_quantity"].sum()
+)
+
+print("\nExamples of adjustment movements:")
+print(
+    adjustment_check[
+        [
+            "movement_id",
+            "quantity",
+            "previous_balance",
+            "running_balance",
+            "actual_balance_change",
+            "expected_balance",
+            "balance_mismatch"
+        ]
+    ].head(10).to_string(index=False)
+)
+
+
+
+
+
+print("\n\n")
+
+# Classify adjustment balance changes
+adjustment_check["adjustment_pattern"] = "Other change"
+
+adjustment_check.loc[
+    adjustment_check["actual_balance_change"]
+    == adjustment_check["quantity"],
+    "adjustment_pattern"
+] = "Increase by quantity"
+
+adjustment_check.loc[
+    adjustment_check["actual_balance_change"]
+    == -adjustment_check["quantity"],
+    "adjustment_pattern"
+] = "Decrease by quantity"
+
+adjustment_check.loc[
+    adjustment_check["actual_balance_change"] == 0,
+    "adjustment_pattern"
+] = "No balance change"
+
+print("Adjustment pattern counts:")
+print(adjustment_check["adjustment_pattern"].value_counts())
+
+print("\nAdjustment pattern percentages:")
+print(
+    (
+        adjustment_check["adjustment_pattern"]
+        .value_counts(normalize=True)
+        .mul(100)
+    ).round(2)
+)
+
+print("\nExamples of other changes:")
+print(
+    adjustment_check.loc[
+        adjustment_check["adjustment_pattern"] == "Other change",
+        [
+            "movement_id",
+            "quantity",
+            "previous_balance",
+            "running_balance",
+            "actual_balance_change",
+            "expected_balance",
+            "balance_mismatch"
+        ]
+    ].head(10).to_string(index=False)
+)
+
+
+
+
+print("\n\n")
+
+# Reference types used by adjustment movements
+adjustment_check = adjustment_check.merge(
+    stock_ledger[["movement_id", "reference_type", "reference_id"]],
+    on="movement_id",
+    how="left",
+    suffixes=("", "_source")
+)
+
+print("Adjustment reference types:")
+print(adjustment_check["reference_type"].value_counts(dropna=False))
+
+print("\nAdjustment patterns by reference type:")
+print(
+    adjustment_check.groupby(
+        ["reference_type", "adjustment_pattern"],
+        dropna=False
+    ).size().unstack(fill_value=0)
+)
+
+print("\nBalance change summary by reference type:")
+print(
+    adjustment_check.groupby("reference_type")["actual_balance_change"]
+    .agg(["count", "mean", "min", "max"])
+    .round(2)
+)
+
+
+
+
+
+print("\n\n")
+
+# Count unique adjustment references
+print("Total adjustment records:", len(adjustment_check))
+print(
+    "Unique adjustment reference IDs:",
+    adjustment_check["reference_id"].nunique()
+)
+
+# Check repeated reference IDs
+reference_counts = adjustment_check["reference_id"].value_counts()
+
+print(
+    "Reference IDs used more than once:",
+    (reference_counts > 1).sum()
+)
+
+print(
+    "Adjustment records associated with repeated references:",
+    adjustment_check["reference_id"].isin(
+        reference_counts[reference_counts > 1].index
+    ).sum()
+)
+
+print("\nMost frequent adjustment reference IDs:")
+print(reference_counts.head(10))
+
+print("\nExamples of repeated references:")
+repeated_refs = reference_counts[reference_counts > 1].index
+
+print(
+    adjustment_check.loc[
+        adjustment_check["reference_id"].isin(repeated_refs),
+        [
+            "movement_id",
+            "product_id",
+            "branch_id",
+            "reference_id",
+            "quantity",
+            "previous_balance",
+            "running_balance",
+            "actual_balance_change"
+        ]
+    ].sort_values("reference_id").head(15).to_string(index=False)
+)
+
+
+
+
+print("\n\n")
+
+# Compare adjustment patterns across branches
+print("Adjustment patterns by branch:")
+print(
+    adjustment_check.groupby(
+        ["branch_id", "adjustment_pattern"]
+    ).size().unstack(fill_value=0)
+)
+
+print("\nAdjustment pattern percentages by branch:")
+branch_pattern_counts = adjustment_check.groupby(
+    ["branch_id", "adjustment_pattern"]
+).size().unstack(fill_value=0)
+
+print(
+    (branch_pattern_counts.div(branch_pattern_counts.sum(axis=1), axis=0) * 100)
+    .round(2)
+)
+
+print("\nAdjustment patterns by product:")
+print(
+    adjustment_check.groupby(
+        ["product_id", "adjustment_pattern"]
+    ).size().unstack(fill_value=0)
+)
+
+
+
+print("\n\n")
+
+# Measure how far the actual change is from +quantity or -quantity
+adjustment_check["difference_from_increase"] = (
+    adjustment_check["actual_balance_change"]
+    - adjustment_check["quantity"]
+).abs()
+
+adjustment_check["difference_from_decrease"] = (
+    adjustment_check["actual_balance_change"]
+    + adjustment_check["quantity"]
+).abs()
+
+print("Difference from expected increase/decrease by pattern:")
+print(
+    adjustment_check.groupby("adjustment_pattern")[
+        [
+            "quantity",
+            "actual_balance_change",
+            "difference_from_increase",
+            "difference_from_decrease"
+        ]
+    ].agg(["count", "mean", "median", "min", "max"]).round(2)
+)
+
+print("\nLargest absolute balance changes among Other change records:")
+print(
+    adjustment_check.loc[
+        adjustment_check["adjustment_pattern"] == "Other change",
+        [
+            "movement_id",
+            "product_id",
+            "branch_id",
+            "quantity",
+            "previous_balance",
+            "running_balance",
+            "actual_balance_change"
+        ]
+    ]
+    .assign(
+        absolute_balance_change=lambda df:
+            df["actual_balance_change"].abs()
+    )
+    .sort_values("absolute_balance_change", ascending=False)
+    .head(10)
+    .to_string(index=False)
+)
+
+
+
+
+
+
+print("\n\n")
+
+# Inspect the complete chronological history for this product and branch
+target = stock_ledger.loc[
+    stock_ledger["movement_id"] == "MOV-ADJ-1666",
+    ["product_id", "branch_id"]
+].iloc[0]
+
+product_id = target["product_id"]
+branch_id = target["branch_id"]
+
+history = stock_ledger.loc[
+    (stock_ledger["product_id"] == product_id) &
+    (stock_ledger["branch_id"] == branch_id)
+].sort_values(
+    ["movement_date", "movement_id"]
+).reset_index(drop=True)
+
+target_index = history.index[
+    history["movement_id"] == "MOV-ADJ-1666"
+][0]
+
+start = max(0, target_index - 5)
+end = min(len(history), target_index + 6)
+
+print("Target product:", product_id)
+print("Target branch:", branch_id)
+print("\nMovements around MOV-ADJ-1666:")
+
+print(
+    history.loc[
+        start:end - 1,
+        [
+            "movement_id",
+            "movement_date",
+            "movement_type",
+            "quantity",
+            "previous_balance",
+            "running_balance",
+            "expected_balance",
+            "balance_mismatch",
+            "reference_id"
+        ]
+    ].to_string(index=False)
+)
+
+
+
+
+
+print("\n\n")
+
+# List DataFrames currently available in the workspace
+dataframes = {
+    name: obj
+    for name, obj in globals().items()
+    if isinstance(obj, pd.DataFrame)
+}
+
+print("Available DataFrames:")
+for name, df in dataframes.items():
+    print(f"{name}: {df.shape}")
+
+# Find tables that may contain adjustment records
+print("\nTables with adjustment-related names:")
+for name, df in dataframes.items():
+    if "adjust" in name.lower() or "adj" in name.lower():
+        print(f"\nTable: {name}")
+        print("Columns:", df.columns.tolist())
+        print(df.head(5).to_string(index=False))
+
+# Search loaded DataFrames for the exact reference ID
+target_reference = "ADJ-1666"
+
+print(f"\nSearching for reference ID: {target_reference}")
+found = False
+
+for name, df in dataframes.items():
+    matching_columns = [
+        col for col in df.columns
+        if col.lower() in ["reference_id", "adjustment_id", "adj_id"]
+    ]
+
+    for col in matching_columns:
+        matches = df.loc[df[col].astype("string") == target_reference]
+
+        if not matches.empty:
+            found = True
+            print(f"\nFound in DataFrame: {name}, column: {col}")
+            print(matches.to_string(index=False))
+
+if not found:
+    print("No exact match found in the checked reference columns.")
+
+
+
+
+
+
+print("\n\n")
+
+from pathlib import Path
+
+data_folder = Path(
+    r"C:\Users\YOUR_USERNAME\Desktop\practice\projects\CadetX_Warehouse_Analytics\Data"
+)
+
+print("Data folder exists:", data_folder.exists())
+
+if data_folder.exists():
+    print("\nFiles in Data folder:")
+    for file_path in sorted(data_folder.iterdir()):
+        if file_path.is_file():
+            print(file_path.name)
+else:
+    print("Please replace YOUR_USERNAME with your Windows username.")
+
+
+
+print("\n\n")
+
+# Main source tables for the final anomaly screening
+tables_to_review = {
+    "customers": customers,
+    "branches": branches,
+    "products": products,
+    "suppliers": suppliers,
+    "inventry_master": inventry_master,
+    "purchase_orders_header": purchase_orders_header,
+    "purchase_orders_lines": purchase_orders_lines,
+    "sales_orders_header": sales_orders_header,
+    "sales_orders_lines": sales_orders_lines,
+    "stock_ledger": stock_ledger,
+    "invoices": invoices,
+    "payments": payments
+}
+
+for table_name, df in tables_to_review.items():
+    print(f"\n--- {table_name} ---")
+    print("Rows:", len(df))
+    print("Missing cells:", int(df.isna().sum().sum()))
+    print("Exact duplicate rows:", int(df.duplicated().sum()))
+
+
+
+
+
+
+print("\n\n")
+
+# Identify missing values by column
+print("Missing values in stock_ledger:")
+print(
+    stock_ledger.isna()
+    .sum()
+    .loc[lambda counts: counts > 0]
+    .sort_values(ascending=False)
+)
+
+# Inspect rows with missing values
+missing_ledger_rows = stock_ledger.loc[
+    stock_ledger.isna().any(axis=1)
+]
+
+print("\nRows containing missing values:", len(missing_ledger_rows))
+
+print("\nSample of affected rows:")
+print(missing_ledger_rows.head(10).to_string(index=False))
+
+
+
+
+print("\n\n")
+
+# Identify the first recorded movement for each product-branch pair
+ledger_sorted = stock_ledger.sort_values(
+    ["product_id", "branch_id", "movement_date", "movement_id"]
+).copy()
+
+ledger_sorted["movement_number"] = (
+    ledger_sorted.groupby(["product_id", "branch_id"]).cumcount() + 1
+)
+
+missing_balance_rows = ledger_sorted[
+    ledger_sorted["previous_balance"].isna()
+]
+
+print("Rows with missing previous_balance:", len(missing_balance_rows))
+
+print(
+    "Missing-balance rows that are first movements:",
+    (missing_balance_rows["movement_number"] == 1).sum()
+)
+
+print(
+    "Missing-balance rows that are not first movements:",
+    (missing_balance_rows["movement_number"] != 1).sum()
+)
+
+print("\nExamples of missing-balance rows that are not first movements:")
+print(
+    missing_balance_rows.loc[
+        missing_balance_rows["movement_number"] != 1,
+        [
+            "movement_id",
+            "product_id",
+            "branch_id",
+            "movement_date",
+            "movement_type",
+            "previous_balance",
+            "movement_number"
+        ]
+    ].head(10).to_string(index=False)
+)
+
+
+
+
+
+print("\n\n")
+
+cleaned_tables = {
+    "customers": customers.copy(),
+    "branches": branches.copy(),
+    "products": products.copy(),
+    "suppliers": suppliers.copy(),
+    "inventry_master": inventry_master.copy(),
+
+    "purchase_orders_header": purchase_orders_header.copy(),
+    "purchase_orders_lines": purchase_orders_lines.copy(),
+    "sales_orders_header": sales_orders_header.copy(),
+    "sales_orders_lines": sales_orders_lines.copy(),
+    "stock_ledger": stock_ledger.copy(),
+    "invoices": invoices.copy(),
+    "payments": payments.copy()
+}
+
+print("Number of tables prepared:", len(cleaned_tables))
+print("\nTable names and dimensions:")
+
+for name, df in cleaned_tables.items():
+    print(f"{name}: {df.shape}")
+
+
+
+print("\n\n")
+
+print("All row counts match:",
+      all(len(cleaned_tables[name]) == len(original)
+          for name, original in {
+              "customers": customers,
+              "branches": branches,
+              "products": products,
+              "suppliers": suppliers,
+              "inventry_master": inventry_master,
+              "purchase_orders_header": purchase_orders_header,
+              "purchase_orders_lines": purchase_orders_lines,
+              "sales_orders_header": sales_orders_header,
+              "sales_orders_lines": sales_orders_lines,
+              "stock_ledger": stock_ledger,
+              "invoices": invoices,
+              "payments": payments
+          }.items()))
+
+print("All missing-value counts match:",
+      all(cleaned_tables[name].isna().sum().sum()
+          == original.isna().sum().sum()
+          for name, original in {
+              "customers": customers,
+              "branches": branches,
+              "products": products,
+              "suppliers": suppliers,
+              "inventry_master": inventry_master,
+              "purchase_orders_header": purchase_orders_header,
+              "purchase_orders_lines": purchase_orders_lines,
+              "sales_orders_header": sales_orders_header,
+              "sales_orders_lines": sales_orders_lines,
+              "stock_ledger": stock_ledger,
+              "invoices": invoices,
+              "payments": payments
+          }.items()))

@@ -1,91 +1,123 @@
 # Heavy Supplier, Inventory & Warehouse Analytics
 
-**CadetX Virtual Work Experience — Data Analytics & Data Science**
+**CadetX Virtual Work Experience | Data Analytics & Data Science**
 
 ## Project Overview
 
-This project explores supply-chain operations using data related to suppliers, products, inventory, warehouses, purchasing, sales, invoices, and payments.
+This project focuses on analyzing supplier, purchasing, inventory, warehouse, and sales operations using real-world-style supply chain datasets provided for the CadetX Virtual Work Experience program.
 
-The objective is to understand the available data, assess data quality, identify relationships between tables, and establish a foundation for future operational and business analysis.
+The objective is to assess data quality, develop reliable analytical datasets, investigate operational performance, identify business insights, and support data-driven decision-making through the project.
 
-## Week 1 Objectives
+The work is organized into weekly sprints, with documentation and deliverables maintained in GitHub throughout the project.
 
-- Understand the available datasets and their structures.
-- Profile tables using Python and pandas.
-- Check missing values, duplicate records, key uniqueness, and relationships.
-- Validate selected dates, stock thresholds, and financial calculations.
-- Document findings, assumptions, and unresolved questions.
-- Identify potential business questions and KPIs for subsequent analysis.
+## Project Objectives
+
+- Understand the structure and relationships of the available datasets.
+- Assess data quality, completeness, consistency, and reliability.
+- Investigate supplier, purchasing, inventory, warehouse, and sales operations.
+- Develop meaningful operational KPIs and analytical insights.
+- Identify data issues that could affect business reporting.
+- Communicate findings through clear documentation and, where appropriate, analytical reports and visualizations.
+
+## Tools and Technologies
+
+- **Python** — data exploration, profiling, and validation.
+- **Pandas** — tabular data analysis and data-quality checks.
+- **Git and GitHub** — version control, project organization, and documentation.
+
+Additional tools will be documented as they are used during subsequent project stages.
+
+## Dataset Overview
+
+The project includes 12 primary datasets covering:
+
+| Area | Datasets |
+|---|---|
+| Business entities | Customers, branches, products, suppliers |
+| Inventory | Inventory master, stock ledger |
+| Purchasing | Purchase order headers, purchase order lines |
+| Sales | Sales order headers, sales order lines |
+| Financial transactions | Invoices, payments |
+
+The raw datasets are maintained locally in the `Data/` directory and excluded from Git where configured by `.gitignore`.
+
+## Project Progress
+
+The project follows a 12-week sprint structure. This section will be updated as each sprint is completed.
+
+### Week 1 — Project Setup and Data Understanding
+
+**Status: Completed**
+
+- Established the project repository and initial folder structure.
+- Explored the available datasets and their structures.
+- Reviewed dataset dimensions, columns, data types, missing values, and duplicate records.
+- Began documenting the datasets and initial project findings.
+
+**Documentation:** [Week 1 README](week-01/README.md)
+
+### Week 2 — Data Quality Assessment
+
+**Status: Documentation prepared; final Git validation pending**
+
+The second week focused on assessing the reliability of the 12 primary datasets and documenting issues that could affect downstream analysis.
+
+Key findings included:
+
+- **Missing values:** 2,370 missing purchase-order receipt dates, all associated with cancelled orders.
+- **Missing stock-ledger balances:** 180 first-movement records with missing previous and expected balances.
+- **Repeated identifiers:** 196 repeated invoice IDs and 201 repeated payment IDs, requiring further investigation.
+- **Inventory anomaly:** All 180 inventory records had current stock greater than maximum stock.
+- **Stock-ledger checks:** 54,876 records carried the existing mismatch flag. Additional checks examined inbound and outbound balance calculations and sequential balance links.
+
+No unsupported corrections were applied. Ambiguous values and repeated identifiers were retained for investigation rather than changed without evidence.
+
+Working copies were validated against the original row counts and missing-value counts. Corrected CSV exports and a reusable cleaning script were not produced during this stage.
+
+**Documentation:**
+- [Week 2 README](week-02/README.md)
+- [Week 2 Data Quality Assessment Report](week-02/docs/week_2_data_quality_report.md)
+
+### Weeks 3–12 — Upcoming Sprints
+
+The remaining weekly sections will be added as the corresponding tasks are completed. Progress, findings, and deliverables will reflect the work actually performed during each sprint.
 
 ## Repository Structure
 
 ```text
 CadetX-Warehouse-Analytics/
-├── Data/                       # Raw data; excluded from Git
-├── Docs/
-│   ├── Data_Quality_Log.md
-│   ├── initial_data_dictionary.md
-│   └── week_1_sprint_notes.md
-├── Src/
-│   └── data_profiling.py
 ├── .gitignore
-└── README.md
+├── Data/                           # Local raw datasets
+├── Src/                            # Shared project scripts
+│   └── data_profiling.py
+├── week-01/
+│   ├── README.md
+│   └── docs/
+├── week-02/
+│   ├── README.md
+│   └── docs/
+│       └── week_2_data_quality_report.md
+└── README.md                       # Main project documentation
 ```
 
-## Tools and Technologies
+The structure will evolve as new weekly deliverables are added. The shared `Src/` directory will remain at the project root, and each weekly folder will maintain its own README and supporting documentation.
 
-- Python
-- pandas
-- Git and GitHub
-- Markdown documentation
+## Data Handling Principles
 
-## Initial Findings
+- Preserve the original datasets.
+- Validate assumptions before correcting questionable values.
+- Do not invent missing balances or replacement identifiers without supporting evidence.
+- Document unresolved data-quality issues and their potential analytical impact.
+- Validate transformations and retain a clear record of analytical decisions.
 
-- Several identifier and foreign-key checks passed.
-- Purchase order and sales order financial calculations were consistent within the tested tolerances.
-- All 180 inventory master records had current stock greater than maximum stock, requiring further investigation.
-- Repeated invoice IDs and payment IDs may affect payment reconciliation.
-- Preliminary stock-ledger running-balance mismatches require further investigation into transaction sequencing and adjustment rules.
-- Some delivery-date observations require clarification of the relevant business rules.
+## Final Deliverables
 
-These are preliminary findings, not confirmed explanations of the underlying issues.
+The repository will progressively contain weekly documentation, analysis scripts, data-quality assessments, validated analytical outputs where appropriate, and business findings.
 
-## Documentation
+The final project summary and conclusions will be expanded as the remaining sprints are completed.
 
-- [Data Quality Log](DOCS/Data_Quality_Log.md)
-- [Initial Data Dictionary](DOCS/initial_data_dictionary.md)
-- [Week 1 Sprint Notes](DOCS/week_1_sprint_notes.md)
+---
 
-## Running the Profiling Script
-
-1. Install Python if it is not already installed.
-2. Install pandas:
-
-   ```bash
-   python -m pip install pandas
-   ```
-
-3. Download or clone this repository.
-4. Obtain the project datasets through the authorized CadetX source and place the CSV files in the local `Data/` directory.
-5. Run the profiling script from the project root:
-
-   ```bash
-   python Src/data_profiling.py
-   ```
-
-The script's required input files and execution assumptions should be checked against its actual implementation before running it in a new environment.
-
-## Data Handling
-
-The raw `Data/` directory is excluded from Git through `.gitignore`. The repository therefore does not contain the raw CSV files. Access the dataset through the authorized project source and follow CadetX's data-sharing requirements.
-
-## Current Status
-
-**Week 1:** Initial profiling and documentation completed locally. Findings and unresolved data-quality questions have been recorded for follow-up.
-
-## Next Steps
-
-- Confirm field definitions and business rules.
-- Investigate the identified stock and identifier issues.
-- Define initial supply-chain business questions and KPIs.
-- Continue the project according to the CadetX sprint roadmap.
+**Project:** Heavy Supplier, Inventory & Warehouse Analytics  
+**Program:** CadetX Virtual Work Experience  
+**Duration:** 12 weeks
